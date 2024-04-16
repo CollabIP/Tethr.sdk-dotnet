@@ -9,7 +9,7 @@
         <Authors>Tethr</Authors>
         <Copyright>CollabIP, inc.</Copyright>
         <PackageProjectUrl>https://support.Tethr.com</PackageProjectUrl>
-        <PackageLicenseUrl>https://github.com/CollabIP/Tethr.sdk-dotnet/blob/main/LICENSE</PackageLicenseUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <RepositoryUrl>https://github.com/CollabIP/Tethr.sdk-dotnet</RepositoryUrl>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageReadmeFile>readme.md</PackageReadmeFile>

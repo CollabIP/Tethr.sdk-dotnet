@@ -118,5 +118,5 @@ public class InteractionParticipant
 		/// <remarks>
 		/// If you require the full transcription from the interactions, please contact Tethr Support to have it enabled on for your API key.
 		/// </remarks>
-		public List<Utterance> Utterances { get; set; }
+		public List<Utterance> Utterances { get; set; } = new();
 }

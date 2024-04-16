@@ -2,7 +2,7 @@
 
 public class CallFlow
 {
-    public string FlowId { get; set; }
+    public string? FlowId { get; set; }
 
-    public string FlowTypeId { get; set; }
+    public string? FlowTypeId { get; set; }
 }

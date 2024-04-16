@@ -1,11 +1,9 @@
-using System.Text.Json.Serialization;
 
 namespace Tethr.Sdk.Session;
 
 /// <summary>
 /// Configuration options for <see cref="ITethrSession"/>.
 /// </summary>
-[JsonSerializable(typeof(TethrOptions))]
 public class TethrOptions
 {
 	/// <summary>

@@ -17,18 +17,18 @@ public class ScoreRenderOptions
     /// the range it falls into.
     /// </summary>
     public bool LabelsOnly { get; set; }
+
+    public List<ScoreRange> Ranges { get; set; } = new();
 		
-    public List<ScoreRange> Ranges { get; set; }
-		
-    public GradientConfig Gradient { get; set; }
+    public GradientConfig? Gradient { get; set; }
 
     public class GradientConfig
     {
-        public List<GradientValue> Ranges { get; set; }
+        public List<GradientValue> Ranges { get; set; } = new();
 
-        public GradientValue Lower { get; set; }
+        public GradientValue? Lower { get; set; }
 
-        public GradientValue Upper { get; set; }
+        public GradientValue? Upper { get; set; }
     }
 
     public class GradientValue

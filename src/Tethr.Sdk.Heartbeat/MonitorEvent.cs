@@ -21,7 +21,7 @@ public class MonitorEvent
 	/// This would normally be set to something like a computer name, but could be an instance if
 	/// you are going to support more then one broker on a given system.
 	/// </remarks>
-	public string Name { get; set; }
+	public string Name { get; set; } = "";
 
 	/// <summary>
 	/// Software Version

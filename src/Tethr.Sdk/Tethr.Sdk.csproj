@@ -12,11 +12,11 @@
         <Authors>Tethr</Authors>
         <Copyright>CollabIP, inc.</Copyright>
         <PackageProjectUrl>https://support.Tethr.com</PackageProjectUrl>
-        <PackageLicenseUrl>https://github.com/CollabIP/Tethr.sdk-dotnet/blob/main/LICENSE</PackageLicenseUrl>
         <RepositoryUrl>https://github.com/CollabIP/Tethr.sdk-dotnet</RepositoryUrl>
         <PackageReadmeFile>readme.md</PackageReadmeFile>
         <PackageIcon>tethr-96.png</PackageIcon>
         <IlcDisableReflection>true</IlcDisableReflection>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
     </PropertyGroup>
 
     <ItemGroup>

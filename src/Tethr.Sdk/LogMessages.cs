@@ -43,7 +43,7 @@ internal static partial class LogMessages
     
     [LoggerMessage(EventId = EventIdOffset + 7, Level = LogLevel.Warning,
         Message = "Error processing option, option {OptionName} is missing from the options",
-        EventName = $"{EventIdPrefix}.OptionsChangeError")]
+        EventName = $"{EventIdPrefix}.OptionNamedChangeError")]
     public static partial void ErrorUpdatingOptionsMissingOption(this ILogger<TethrSession> logger, string optionName);
     
     [LoggerMessage(EventId = EventIdOffset + 8, Level = LogLevel.Debug,
