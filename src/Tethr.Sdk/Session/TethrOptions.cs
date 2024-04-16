@@ -1,25 +1,25 @@
-using System.Data.Common;
+using System.Text.Json.Serialization;
 
-namespace Tethr.Sdk.Session
+namespace Tethr.Sdk.Session;
+
+/// <summary>
+/// Configuration options for <see cref="ITethrSession"/>.
+/// </summary>
+[JsonSerializable(typeof(TethrOptions))]
+public class TethrOptions
 {
 	/// <summary>
-	/// Configuration options for <see cref="ITethrSession"/>.
+	/// The URI to the Tethr API server.
 	/// </summary>
-	public class TethrOptions
-	{
-		/// <summary>
-		/// The URI to the Tethr API server.
-		/// </summary>
-		public string Uri { get; set; }
+	public string? Uri { get; set; } 
 		
-		/// <summary>
-		/// The Tethr API user name
-		/// </summary>
-		public string ApiUser { get; set; }
+	/// <summary>
+	/// The Tethr API user name
+	/// </summary>
+	public string? ApiUser { get; set; }
 		
-		/// <summary>
-		/// The API password provided from Tethr.
-		/// </summary>
-		public string Password { get; set; }
-	}
+	/// <summary>
+	/// The API password provided from Tethr.
+	/// </summary>
+	public string? Password { get; set; }
 }

@@ -40,4 +40,14 @@ internal static partial class LogMessages
         Message = "Error processing change to options",
         EventName = $"{EventIdPrefix}.OptionsChangeError")]
     public static partial void ErrorUpdatingOptions(this ILogger<TethrSession> logger, Exception ex);
+    
+    [LoggerMessage(EventId = EventIdOffset + 7, Level = LogLevel.Warning,
+        Message = "Error processing option, option {OptionName} is missing from the options",
+        EventName = $"{EventIdPrefix}.OptionsChangeError")]
+    public static partial void ErrorUpdatingOptionsMissingOption(this ILogger<TethrSession> logger, string optionName);
+    
+    [LoggerMessage(EventId = EventIdOffset + 8, Level = LogLevel.Debug,
+        Message = "Successful upload of {InteractionType} interaction with session id {SessionId}, returned Tethr interaction id {InteractionId}",
+        EventName = $"{EventIdPrefix}.TethrCapture")]
+    public static partial void InteractionUploadEed(this ILogger<TethrCapture> logger, string interactionType, string sessionId, string interactionId, Exception ex);
 }

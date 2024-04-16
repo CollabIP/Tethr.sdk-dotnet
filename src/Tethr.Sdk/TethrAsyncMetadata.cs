@@ -1,59 +1,61 @@
 using Tethr.Sdk.Model;
 using Tethr.Sdk.Session;
 
-namespace Tethr.Sdk
+namespace Tethr.Sdk;
+
+public sealed class TethrAsyncMetadata(ITethrSession tethrSession)
 {
     /// <summary>
-    /// Interface for updating metadata for interactions.
+    /// Update metadata for the interaction with the specified session Id.
     /// </summary>
-    public interface ITethrAsyncMetadata
+    public async Task SendAsyncMetadataRequestAsync(AsyncMetadataSessionRequest request,
+        CancellationToken cancellationToken = default)
     {
-        /// <summary>
-        /// Update metadata for the interaction with the specified session Id.
-        /// </summary>
-        /// <param name="metadata"></param>
-        /// <returns></returns>
-        Task SendInteractionMetadataBySessionIdAsync(SessionInteractionMetadata metadata);
+        ArgumentNullException.ThrowIfNull(request, nameof(request));
+        ArgumentNullException.ThrowIfNull(request.SessionId, nameof(request.SessionId));
+        ArgumentNullException.ThrowIfNull(request.Metadata, nameof(request.Metadata));
 
-        /// <summary>
-        /// Update metadata for all interactions with the specified master call Id.
-        /// </summary>
-        /// <param name="metadata"></param>
-        /// <returns></returns>
-        Task SendInteractionMetadataByMasterCallIdAsync(MasterInteractionMetadata metadata);
-
-        /// <summary>
-        /// Update metadata for the case with the specified case reference Id.
-        /// </summary>
-        /// <param name="metadata"></param>
-        /// <returns></returns>
-        Task SendInteractionMetadataByCaseReferenceIdAsync(CaseInteractionMetadata metadata);
+        await tethrSession.PostAsync("capture/v2/outofband/interaction", request,
+            TethrModelSerializerContext.Default.AsyncMetadataSessionRequest, cancellationToken).ConfigureAwait(false);
     }
 
-    public class TethrAsyncMetadata(ITethrSession tethrSession) : ITethrAsyncMetadata
+    /// <summary>
+    /// Update metadata for all interactions with the specified master Id.
+    /// </summary>
+    public async Task SendAsyncMetadataRequestAsync(AsyncMetadataMasterRequest request,
+        CancellationToken cancellationToken = default)
     {
-        /// <inheritdoc/>
-        public async Task SendInteractionMetadataBySessionIdAsync(SessionInteractionMetadata metadata)
-        {
-            ArgumentNullException.ThrowIfNull(metadata, nameof(metadata));
-            await tethrSession.PostAsync("/callEvent/v1/outofband/event", metadata,
-                TethrModelSerializerContext.Default.SessionInteractionMetadata).ConfigureAwait(false);
-        }
+        ArgumentNullException.ThrowIfNull(request, nameof(request));
+        ArgumentNullException.ThrowIfNull(request.MasterId, nameof(request.MasterId));
+        ArgumentNullException.ThrowIfNull(request.Metadata, nameof(request.Metadata));
+        await tethrSession.PostAsync("/capture/v2/outofband/master", request,
+            TethrModelSerializerContext.Default.AsyncMetadataMasterRequest, cancellationToken).ConfigureAwait(false);
+    }
 
-        /// <inheritdoc/>
-        public async Task SendInteractionMetadataByMasterCallIdAsync(MasterInteractionMetadata metadata)
-        {
-            ArgumentNullException.ThrowIfNull(metadata, nameof(metadata));
-            await tethrSession.PostAsync("/callEvent/v1/outofband/masterCall", metadata,
-                TethrModelSerializerContext.Default.MasterInteractionMetadata).ConfigureAwait(false);
-        }
+    /// <summary>
+    /// Update metadata for the case with the specified case reference Id.
+    /// </summary>
+    public async Task SendAsyncMetadataRequestAsync(AsyncMetadataCaseRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(request, nameof(request));
+        ArgumentNullException.ThrowIfNull(request.CaseReferenceId, nameof(request.CaseReferenceId));
+        ArgumentNullException.ThrowIfNull(request.Metadata, nameof(request.Metadata));
+        await tethrSession.PostAsync("/capture/v2/outofband/case", request,
+            TethrModelSerializerContext.Default.AsyncMetadataCaseRequest, cancellationToken).ConfigureAwait(false);
+    }
 
-        /// <inheritdoc/>
-        public async Task SendInteractionMetadataByCaseReferenceIdAsync(CaseInteractionMetadata metadata)
-        {
-            ArgumentNullException.ThrowIfNull(metadata, nameof(metadata));
-            await tethrSession.PostAsync("/callEvent/v1/outofband/case", metadata,
-                TethrModelSerializerContext.Default.CaseInteractionMetadata).ConfigureAwait(false);
-        }
+    /// <summary>
+    /// Append metadata to all interactions based on the Collection Id provided.
+    /// </summary>
+    public async Task SendAsyncMetadataRequestAsync(AsyncMetadataCollectionRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(request, nameof(request));
+        ArgumentNullException.ThrowIfNull(request.CollectionId, nameof(request.CollectionId));
+        ArgumentNullException.ThrowIfNull(request.Metadata, nameof(request.Metadata));
+        await tethrSession.PostAsync("/capture/v2/outofband/collection", request,
+                TethrModelSerializerContext.Default.AsyncMetadataCollectionRequest, cancellationToken)
+            .ConfigureAwait(false);
     }
 }

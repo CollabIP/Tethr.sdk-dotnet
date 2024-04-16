@@ -4,7 +4,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tethr.Sdk", "Tethr.Sdk\Teth
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tethr.Sdk.Heartbeat", "Tethr.Sdk.Heartbeat\Tethr.Sdk.Heartbeat.csproj", "{28C4BFBF-0AD3-4F20-AE22-D926C2EFC8D7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tethr.Demo.FolderUploader", "Tethr.Demo.FolderUploader\Tethr.Demo.FolderUploader.csproj", "{64C5BD27-2A6D-4FFF-B899-6F3A472A99AB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tethr.Demo.Uploader", "Tethr.Demo.Uploader\Tethr.Demo.Uploader.csproj", "{64C5BD27-2A6D-4FFF-B899-6F3A472A99AB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tethr.Sdk.Tests", "Tethr.Sdk.Tests\Tethr.Sdk.Tests.csproj", "{07E0B810-EEBD-4FFD-B04F-22F7D6442754}"
 EndProject

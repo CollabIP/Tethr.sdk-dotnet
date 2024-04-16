@@ -5,14 +5,31 @@
         <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
         <LangVersion>12.0</LangVersion>
         <Nullable>enable</Nullable>
+        <Title>Tethr.Sdk.Heartbeat</Title>
+        <Authors>Tethr</Authors>
+        <Copyright>CollabIP, inc.</Copyright>
+        <PackageProjectUrl>https://support.Tethr.com</PackageProjectUrl>
+        <PackageLicenseUrl>https://github.com/CollabIP/Tethr.sdk-dotnet/blob/main/LICENSE</PackageLicenseUrl>
+        <RepositoryUrl>https://github.com/CollabIP/Tethr.sdk-dotnet</RepositoryUrl>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageReadmeFile>readme.md</PackageReadmeFile>
+        <PackageIcon>tethr-96.png</PackageIcon>
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Tethr.Sdk\Tethr.Sdk.csproj" />
+        <ProjectReference Include="..\Tethr.Sdk\Tethr.Sdk.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="..\tethr-96.png" Pack="true" PackagePath="\">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            <CopyToPublishDirectory>true</CopyToPublishDirectory>
+        </None>
+        <None Include="readme.md" Pack="true" PackagePath="\"/>
     </ItemGroup>
 
 </Project>

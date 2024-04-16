@@ -1,7 +1,6 @@
-﻿namespace Tethr.Sdk.Model
+﻿namespace Tethr.Sdk.Model;
+
+public class Audio
 {
-    public class Audio
-    {
-        public string Format { get; set; } = string.Empty;
-    }
+    public string? Format { get; set; }
 }

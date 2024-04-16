@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Tethr.Sdk.Session;
 
 namespace Tethr.Sdk.Heartbeat;
 
@@ -12,6 +11,7 @@ public static class TethrHeartBeatStartupExtensions
     {
         var optionsBuilder = services.AddOptions<TethrHeartbeatOptions>().BindConfiguration("Tethr");
         if (configure is not null) optionsBuilder.Configure(configure);
+        services.AddSingleton<TethrHeartbeat>();
         services.AddHostedService<TethrHeartbeatService>();
         return services;
     }

@@ -8,7 +8,7 @@ namespace Tethr.Sdk.Heartbeat;
 public static class TethrHeartbeatExtensions
 {
     [UnconditionalSuppressMessage("SingleFile", "IL3000:Avoid accessing Assembly file path when publishing as a single file", Justification = "<Pending>")]
-    public static async Task Send(this ITethrHeartbeat heartbeat, MonitorStatus monitorStatus)
+    public static async Task Send(this TethrHeartbeat heartbeat, MonitorStatus monitorStatus)
     {
         var assembly = Assembly.GetExecutingAssembly();
         var assemblyLocation = assembly.Location;

@@ -7,30 +7,15 @@ namespace Tethr.Sdk.Heartbeat;
 
 public sealed class TethrHeartbeatService(
     IOptionsMonitor<TethrHeartbeatOptions> options,
-    ITethrHeartbeat heartbeat,
+    TethrHeartbeat heartbeat,
     ILogger<TethrHeartbeatService> logger)
     : BackgroundService
 {
-    private Func<MonitorStatus>? _getStatusCallback;
-    
     /// <summary>
     /// Indicates that our connection to Tethr is online, and we can send call to Tethr.
     /// </summary>
     public bool Online { get; private set; }
     
-    /// <summary>
-    /// Setup a call back for checking the status health of the broker.
-    /// </summary>
-    /// <remarks>
-    /// This allows for the broker to check other internal status indicators to see if the system is healthy.
-    /// If a call back is not set, a default value of Healthy will be sent to Tethr.
-    /// </remarks>
-    /// <param name="getStatusCallback">A function that will return the current status of the broker</param>
-    public void SetupCallBack(Func<MonitorStatus> getStatusCallback)
-    {
-        _getStatusCallback = getStatusCallback;
-    }
-
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         var initPeriod = TimeSpan.FromSeconds(options.CurrentValue.HeartbeatIntervalSeconds ?? 0);
@@ -62,12 +47,10 @@ public sealed class TethrHeartbeatService(
                 }
 
                 // ReSharper disable once AccessToDisposedClosure
-                if (timer.Period != initPeriod)
-                {
-                    // ReSharper disable once AccessToDisposedClosure
-                    timer.Period = initPeriod;
-                    logger.SetHeartbeatIntervalSeconds((int)initPeriod.TotalSeconds);
-                }
+                if (timer.Period == initPeriod) return;
+                // ReSharper disable once AccessToDisposedClosure
+                timer.Period = initPeriod;
+                logger.SetHeartbeatIntervalSeconds((int)initPeriod.TotalSeconds);
             }
             catch (Exception e)
             {
@@ -85,7 +68,7 @@ public sealed class TethrHeartbeatService(
             try
             {
                 var status = MonitorStatus.Healthy;
-                var statusCallback = _getStatusCallback;
+                var statusCallback = options.CurrentValue.StatusCallback;
                 if (statusCallback != null)
                     status = statusCallback();
                 

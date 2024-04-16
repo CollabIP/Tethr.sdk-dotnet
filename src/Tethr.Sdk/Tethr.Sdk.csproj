@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
     <PropertyGroup>
         <ImplicitUsings>enable</ImplicitUsings>
         <IsAotCompatible>true</IsAotCompatible>
@@ -8,6 +7,16 @@
         <Nullable>enable</Nullable>
         <InvariantGlobalization>true</InvariantGlobalization>
         <EnableSystemTextJsonSourceGeneration>true</EnableSystemTextJsonSourceGeneration>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Title>Tethr.Sdk</Title>
+        <Authors>Tethr</Authors>
+        <Copyright>CollabIP, inc.</Copyright>
+        <PackageProjectUrl>https://support.Tethr.com</PackageProjectUrl>
+        <PackageLicenseUrl>https://github.com/CollabIP/Tethr.sdk-dotnet/blob/main/LICENSE</PackageLicenseUrl>
+        <RepositoryUrl>https://github.com/CollabIP/Tethr.sdk-dotnet</RepositoryUrl>
+        <PackageReadmeFile>readme.md</PackageReadmeFile>
+        <PackageIcon>tethr-96.png</PackageIcon>
+        <IlcDisableReflection>true</IlcDisableReflection>
     </PropertyGroup>
 
     <ItemGroup>
@@ -15,5 +24,11 @@
       <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
       <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
     </ItemGroup>
-
+    <ItemGroup>
+        <None Include="..\tethr-96.png" Pack="true" PackagePath="\">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            <CopyToPublishDirectory>true</CopyToPublishDirectory>
+        </None>
+        <None Include="readme.md" Pack="true" PackagePath="\"/>
+    </ItemGroup>
 </Project>

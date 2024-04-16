@@ -3,6 +3,11 @@ namespace Tethr.Sdk.Model;
 public enum SessionStatuses
 {
     /// <summary>
+    /// Default value, indicates Tethr didn't return a status.
+    /// </summary>
+    Unknown,
+    
+    /// <summary>
     /// The call currently in progress.
     /// </summary>
     InProgress,
