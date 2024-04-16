@@ -1,0 +1,71 @@
+name: "Validation and Analysis"
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: [ main ]
+  schedule:
+    - cron: '43 2 * * 2'
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: restore dependencies for solution   
+      run: dotnet restore src/Tethr.Sdk.sln
+
+    # Initializes the CodeQL tools for scanning.
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v2
+      with:
+        languages: csharp
+        config-file: ./.github/codeql/codeql-config.yml
+
+    - name: Build .NET with CodeQL
+      run: 
+        dotnet build src/Tethr.Sdk.sln /p:UseSharedCompilation=false /t:rebuild /p:Platform="Any CPU" /p:Configuration="Release" /p:MvcBuildViews=true
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v2
+
+    - name: Run Unit Tests
+      id: unit_tests
+      run: dotnet test src/Tethr.Sdk.Tests/Tethr.Sdk.Tests.csproj
+      continue-on-error: true
+
+    - name: Find .received.bin files
+      if: steps.unit_tests.outcome == 'failure'
+      run: |
+        echo "Searching for *.verified.bin files in the repository..."
+        find . -type f -name "*.received.bin"
+
+    - name: Upload .received.bin files as artifacts
+      if: steps.unit_tests.outcome == 'failure'
+      uses: actions/upload-artifact@v3
+      with:
+        name: received-bin-files
+        path: |
+          src/Tethr.Sdk.Tests/*.received.bin
+
+    - name: Fail workflow if tests failed
+      if: steps.unit_tests.outcome == 'failure'
+      run: exit 1
+
+    - name: upload sarif
+      uses: actions/upload-artifact@v2
+      with:
+        name: cSharp-Sarif
+        path: results/cSharp.sarif 
+        # if-no-files-found: error (commented out, uncomment if you want to enforce this)

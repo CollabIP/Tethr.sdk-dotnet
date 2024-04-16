@@ -13,8 +13,8 @@ public class TethrCaptureTests
         var recording = new CaptureCallRequest
         {
             SessionId = "Test",
-            UtcStart = new DateTime(2024, 1, 1, 4, 23, 0).ToUniversalTime(),
-            UtcEnd = new DateTime(2024, 1, 1, 4, 23, 0).ToUniversalTime(),
+            UtcStart = new DateTime(2024, 1, 1, 4, 23, 0, DateTimeKind.Utc),
+            UtcEnd = new DateTime(2024, 1, 1, 4, 23, 0, DateTimeKind.Utc),
             Direction = InteractionDirection.Unknown,
         };
         
@@ -42,8 +42,8 @@ public class TethrCaptureTests
         var recording = new CaptureCallRequest
         {
             SessionId = "Test",
-            UtcStart = new DateTime(2024, 1, 1, 4, 23, 0).ToUniversalTime(),
-            UtcEnd = new DateTime(2024, 1, 1, 4, 23, 0).ToUniversalTime(),
+            UtcStart = new DateTime(2024, 1, 1, 4, 23, 0, DateTimeKind.Utc),
+            UtcEnd = new DateTime(2024, 1, 1, 4, 23, 0, DateTimeKind.Utc),
             Direction = InteractionDirection.Unknown,
             Metadata = JsonSerializer.SerializeToElement(new MyMetaDataType { IsTest = true }, options)
         };
