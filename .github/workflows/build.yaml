@@ -11,7 +11,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Extract version data
       id: version
@@ -33,10 +33,10 @@ jobs:
       run: dotnet test src/Tethr.Sdk.Tests/Tethr.Sdk.Tests.csproj
 
     - name: Pack Tethr.Sdk
-      run: dotnet pack src/Tethr.Sdk/Tethr.Sdk.csproj --configuration Release --output ./nupkg /p:PackageVersion=${{ env.NUGET_VERSION}}
+      run: dotnet pack src/Tethr.Sdk/Tethr.Sdk.csproj --configuration Release --output ./nupkg /p:PackageVersion=${{ env.NUGET_VERSION}} --include-symbols -p:SymbolPackageFormat=snupkg
 
     - name: Pack Tethr.Sdk.Heartbeat
-      run: dotnet pack src/Tethr.Sdk.Heartbeat/Tethr.Sdk.Heartbeat.csproj --configuration Release --output ./nupkg /p:PackageVersion=${{ env.NUGET_VERSION }}
+      run: dotnet pack src/Tethr.Sdk.Heartbeat/Tethr.Sdk.Heartbeat.csproj --configuration Release --output ./nupkg /p:PackageVersion=${{ env.NUGET_VERSION }} --include-symbols -p:SymbolPackageFormat=snupkg
 
     - name: Publish to NuGet
       run: dotnet nuget push "./nupkg/*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
