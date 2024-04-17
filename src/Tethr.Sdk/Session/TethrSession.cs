@@ -140,7 +140,7 @@ public class TethrSession : ITethrSession, IDisposable
         JsonTypeInfo<T> outputJsonInfo,
         CancellationToken cancellationToken)
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, CreateUri(resourcePath));
+        using var request = new HttpRequestMessage(HttpMethod.Get, CreateUri(resourcePath));
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", GetApiAuthToken(cancellationToken));
         using var message = await _client.SendAsync(request, cancellationToken).ConfigureAwait(false);
         EnsureAuthorizedStatusCode(message);
@@ -166,23 +166,32 @@ public class TethrSession : ITethrSession, IDisposable
         string resourcePath,
         CancellationToken cancellationToken)
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, CreateUri(resourcePath));
+        using var request = new HttpRequestMessage(HttpMethod.Get, CreateUri(resourcePath));
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", GetApiAuthToken(cancellationToken));
-        using var message = await _client.SendAsync(request, cancellationToken).ConfigureAwait(false);
-        EnsureAuthorizedStatusCode(message);
-
-        if (message.StatusCode == HttpStatusCode.NotFound)
-            throw new KeyNotFoundException("The requested resource was not found in Tethr");
-
-        message.EnsureSuccessStatusCode();
-        if (message.Content.Headers.ContentType?.MediaType?.Equals("audio/mpeg",
-                StringComparison.OrdinalIgnoreCase) != true)
+        var message = await _client.SendAsync(request, cancellationToken).ConfigureAwait(false);
+        try
         {
-            throw new InvalidOperationException(
-                $"Unexpected content type ({message.Content.Headers.ContentType}) returned from server.");
-        }
+            EnsureAuthorizedStatusCode(message);
 
-        return await message.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+            if (message.StatusCode == HttpStatusCode.NotFound)
+                throw new KeyNotFoundException("The requested resource was not found in Tethr");
+
+            message.EnsureSuccessStatusCode();
+            if (message.Content.Headers.ContentType?.MediaType?.Equals("audio/mpeg",
+                    StringComparison.OrdinalIgnoreCase) != true)
+            {
+                throw new InvalidOperationException(
+                    $"Unexpected content type ({message.Content.Headers.ContentType}) returned from server.");
+            }
+
+            return await message.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+        }
+        catch 
+        {
+            // Make sure message is disposed if we have an exception, as the calling code can't dispose the stream.
+            message.Dispose();
+            throw;
+        }
     }
 
     /// <inheritdoc/>
@@ -214,7 +223,8 @@ public class TethrSession : ITethrSession, IDisposable
             content.Add(infoContent, "info");
             content.Add(streamContent, "data");
 
-            var request = new HttpRequestMessage(HttpMethod.Post, CreateUri(resourcePath)) { Content = content };
+            using var request = new HttpRequestMessage(HttpMethod.Post, CreateUri(resourcePath));
+            request.Content = content;
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", GetApiAuthToken(cancellationToken));
             using var message = await _client.SendAsync(request, cancellationToken).ConfigureAwait(false);
 
@@ -257,7 +267,8 @@ public class TethrSession : ITethrSession, IDisposable
         using var content = new StreamContent(requestContentStream);
         content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-        var request = new HttpRequestMessage(HttpMethod.Post, CreateUri(resourcePath)) { Content = content };
+        using var request = new HttpRequestMessage(HttpMethod.Post, CreateUri(resourcePath));
+        request.Content = content;
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", GetApiAuthToken(cancellationToken));
         using var message = await _client.SendAsync(request, cancellationToken).ConfigureAwait(false);
         EnsureAuthorizedStatusCode(message);
@@ -280,7 +291,7 @@ public class TethrSession : ITethrSession, IDisposable
         JsonTypeInfo<TIn> inputJsonInfo,
         CancellationToken cancellationToken)
     {
-        var requestContentStream = new MemoryStream();
+        using var requestContentStream = new MemoryStream();
         await JsonSerializer.SerializeAsync(requestContentStream, body, inputJsonInfo, cancellationToken)
             .ConfigureAwait(false);
         requestContentStream.Seek(0, SeekOrigin.Begin);
@@ -288,7 +299,8 @@ public class TethrSession : ITethrSession, IDisposable
         using var content = new StreamContent(requestContentStream);
         content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-        var request = new HttpRequestMessage(HttpMethod.Post, CreateUri(resourcePath)) { Content = content };
+        using var request = new HttpRequestMessage(HttpMethod.Post, CreateUri(resourcePath));
+        request.Content = content;
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", GetApiAuthToken(cancellationToken));
         using var message = await _client.SendAsync(request, cancellationToken).ConfigureAwait(false);
         EnsureAuthorizedStatusCode(message);
@@ -300,7 +312,7 @@ public class TethrSession : ITethrSession, IDisposable
         string resourcePath,
         CancellationToken cancellationToken)
     {
-        var request = new HttpRequestMessage(HttpMethod.Post, CreateUri(resourcePath));
+        using var request = new HttpRequestMessage(HttpMethod.Post, CreateUri(resourcePath));
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", GetApiAuthToken(cancellationToken));
         using var message = await _client.SendAsync(request, cancellationToken).ConfigureAwait(false);
         EnsureAuthorizedStatusCode(message);
@@ -377,8 +389,10 @@ public class TethrSession : ITethrSession, IDisposable
                 },
                 { "client_id", clientId }
             });
+        using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, CreateUri("/Token"));
+        httpRequestMessage.Content = r;
         using var response = await _client
-            .SendAsync(new HttpRequestMessage(HttpMethod.Post, CreateUri("/Token")) { Content = r }, cancellationToken)
+            .SendAsync(httpRequestMessage, cancellationToken)
             .ConfigureAwait(false);
 
         if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)

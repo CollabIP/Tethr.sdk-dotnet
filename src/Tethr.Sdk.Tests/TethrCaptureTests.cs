@@ -20,7 +20,7 @@ public class TethrCaptureTests
         
         recording.SetMetadata(new MyMetaDataType { IsTest = true }, MyMetaDataTypeContext.Default.MyMetaDataType);
 
-        var requestContentStream = new MemoryStream();
+        using var requestContentStream = new MemoryStream();
         await JsonSerializer
             .SerializeAsync(requestContentStream, recording, TethrModelSerializerContext.Default.CaptureCallRequest,
                 cancellationToken: default)
@@ -48,7 +48,7 @@ public class TethrCaptureTests
             Metadata = JsonSerializer.SerializeToElement(new MyMetaDataType { IsTest = true }, options)
         };
       
-        var requestContentStream = new MemoryStream();
+        using var requestContentStream = new MemoryStream();
         await JsonSerializer
             .SerializeAsync(requestContentStream, recording, TethrModelSerializerContext.Default.CaptureCallRequest,
                 cancellationToken: default)

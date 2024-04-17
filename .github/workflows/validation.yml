@@ -11,8 +11,8 @@ on:
     - cron: '43 2 * * 2'
 
 jobs:
-  analyze:
-    name: Analyze
+  validation:
+    name: Build Validation
     runs-on: ubuntu-latest
     permissions:
       actions: read
