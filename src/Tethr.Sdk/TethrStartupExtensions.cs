@@ -19,7 +19,7 @@ public static class TethrStartupExtensions
         var optionsBuilder = services.AddOptions<TethrOptions>().BindConfiguration("Tethr");
         if (configure is not null) optionsBuilder.Configure(configure);
 
-        services.AddSingleton<ITethrSession>();
+        services.AddSingleton<ITethrSession, TethrSession>();
         services.AddSingleton<TethrCapture>();
         services.AddSingleton<TethrAsyncMetadata>();
         services.AddSingleton<TethrInteraction>();
