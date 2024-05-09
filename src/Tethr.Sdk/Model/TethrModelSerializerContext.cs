@@ -4,6 +4,9 @@ namespace Tethr.Sdk.Model;
 
 [JsonSourceGenerationOptions(
     PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase,
+#if NET8_0_OR_GREATER
+    UseStringEnumConverter = true,
+#endif
     DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
 [JsonSerializable(typeof(AsyncMetadataSessionRequest))]
 [JsonSerializable(typeof(AsyncMetadataMasterRequest))]
@@ -26,8 +29,8 @@ namespace Tethr.Sdk.Model;
 [JsonSerializable(typeof(CaptureResponse))]
 [JsonSerializable(typeof(CaptureStatusHeartbeatRequest))]
 
-[JsonSerializable(typeof(CategoryInfoResponse))]
-[JsonSerializable(typeof(CustomFieldResponse))]
+[JsonSerializable(typeof(CategoryInfoArrayResponse))]
+[JsonSerializable(typeof(CustomFieldsResponse))]
 [JsonSerializable(typeof(ParticipantTypesResponse))]
 
 public sealed partial class TethrModelSerializerContext : JsonSerializerContext;

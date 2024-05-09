@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace Tethr.Sdk.Model;
 
@@ -85,7 +84,7 @@ public class CaptureCallRequest : ITethrMetadata
                 _utcEnd = null;
             else
             {
-                Debug.Assert(value?.Kind == DateTimeKind.Utc,
+                Debug.Assert(value.Value.Kind == DateTimeKind.Utc,
                     "End time kind is Unspecified, this could result in incorrect times showing up in Tethr");
                 _utcEnd = value.Value;
             }
@@ -95,7 +94,6 @@ public class CaptureCallRequest : ITethrMetadata
     /// <summary>
     /// A list of contacts that participated in the call.
     /// </summary>
-    [JsonPropertyName("Participant")]
     public List<CaptureCallContact> Participants { get; set; } = new();
 
     /// <summary>
@@ -153,5 +151,5 @@ public class CaptureCallRequest : ITethrMetadata
     /// 
     /// There is really no limit to what can be put in there, as long as it can be converted to JSON.
     /// </remarks>
-    public JsonElement Metadata { get; set; }
+    public JsonElement? Metadata { get; set; }
 }

@@ -43,7 +43,7 @@ namespace Tethr.Sdk.Model
 		public string? CollectionId { get; set; }
 
 		/// <inheritdoc/>
-		public JsonElement Metadata { get; set; }
+		public JsonElement? Metadata { get; set; }
 
 		/// <summary>
 		/// The datetime when the case was opened in UTC.

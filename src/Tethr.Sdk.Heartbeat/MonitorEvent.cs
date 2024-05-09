@@ -1,4 +1,6 @@
-﻿namespace Tethr.Sdk.Heartbeat;
+﻿using System.Text.Json.Serialization;
+
+namespace Tethr.Sdk.Heartbeat;
 
 public class MonitorEvent
 {
@@ -34,6 +36,9 @@ public class MonitorEvent
 
 }
 
+#if !NET8_0_OR_GREATER
+[JsonConverter(typeof(JsonStringEnumConverter))]
+#endif
 public enum MonitorStatus
 {
 	/// <summary>

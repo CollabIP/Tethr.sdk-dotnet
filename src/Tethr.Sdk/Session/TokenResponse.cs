@@ -11,7 +11,7 @@ internal class TokenResponse
 
     public long ExpiresInSeconds;
 
-    public DateTime CreatedTimeStamp { get; set; }
+    public DateTime CreatedTimeStampUtc { get; set; } = DateTime.UtcNow;
 
-    public bool IsValid => CreatedTimeStamp + TimeSpan.FromSeconds(ExpiresInSeconds - 45) > DateTime.Now;
+    public bool IsValid => CreatedTimeStampUtc + TimeSpan.FromSeconds(ExpiresInSeconds - 45) > DateTime.UtcNow;
 }

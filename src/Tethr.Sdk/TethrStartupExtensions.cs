@@ -23,6 +23,7 @@ public static class TethrStartupExtensions
         services.AddSingleton<TethrCapture>();
         services.AddSingleton<TethrAsyncMetadata>();
         services.AddSingleton<TethrInteraction>();
+        services.AddSingleton<TethrProcessing>();
 
         return services;
     }

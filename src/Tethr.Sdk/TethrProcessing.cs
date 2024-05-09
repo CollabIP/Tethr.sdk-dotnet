@@ -10,21 +10,21 @@ public class TethrProcessing(ITethrSession tethrSession)
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns>A list of category info items</returns>
-    public async Task<CategoryInfoResponse> GetCategoriesAsync(CancellationToken cancellationToken = default)
+    public async Task<CategoryInfoArrayResponse> GetCategoriesAsync(CancellationToken cancellationToken = default)
     {
         var result = await
             tethrSession.GetAsync($"/processing/v2/categories",
-                    TethrModelSerializerContext.Default.CategoryInfoResponse, cancellationToken)
+                    TethrModelSerializerContext.Default.CategoryInfoArrayResponse, cancellationToken)
                 .ConfigureAwait(false);
 
         return result;
     }
 
-    public async Task<CustomFieldResponse> GetCustomFieldsAsync(CancellationToken cancellationToken = default)
+    public async Task<CustomFieldsResponse> GetCustomFieldsAsync(CancellationToken cancellationToken = default)
     {
         var result = await
             tethrSession.GetAsync($"/processing/v2/customFields",
-                    TethrModelSerializerContext.Default.CustomFieldResponse, cancellationToken)
+                    TethrModelSerializerContext.Default.CustomFieldsResponse, cancellationToken)
                 .ConfigureAwait(false);
 
         return result;

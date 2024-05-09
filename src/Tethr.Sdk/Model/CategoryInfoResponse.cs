@@ -1,5 +1,9 @@
 ﻿namespace Tethr.Sdk.Model;
 
+public class CategoryInfoArrayResponse : ArrayResponse<CategoryInfoResponse>
+{
+}
+
 public class CategoryInfoResponse
 {
     /// <summary>

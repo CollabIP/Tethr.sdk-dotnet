@@ -11,7 +11,7 @@ public class UploadCallWorker(TethrCapture tethrCapture, ILogger<UploadCallWorke
         var callRequest = new CaptureCallRequest
         {
             Direction = InteractionDirection.Inbound,
-            SessionId = "123",
+            SessionId = GenerateSessionId(),
             Participants =
             [
                 new()
@@ -56,9 +56,10 @@ public class UploadCallWorker(TethrCapture tethrCapture, ILogger<UploadCallWorke
 
             await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
         }
-        
-        if(stoppingToken.IsCancellationRequested)
-            return;
-        
+    }
+    
+    private static string GenerateSessionId()
+    {
+        return "SDKUploader" + DateTime.Now.ToString("yyyyMMddHHmmss");
     }
 }

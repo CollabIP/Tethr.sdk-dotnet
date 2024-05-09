@@ -62,5 +62,5 @@ public class CaptureChatRequest : ITethrMetadata
 	/// 
 	/// There is really no limit to what can be put in there, as long as it can be converted to JSON.
 	/// </remarks>
-	public JsonElement Metadata { get; set; }
+	public JsonElement? Metadata { get; set; }
 }

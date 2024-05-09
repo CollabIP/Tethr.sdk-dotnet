@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.Authentication;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization.Metadata;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -400,17 +401,46 @@ public class TethrSession : ITethrSession, IDisposable
                 $"Server returned {response.StatusCode} to request to get Access Token.");
 
         response.EnsureSuccessStatusCode();
-        var t = JsonSerializer.Deserialize(
-            await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false),
-            TokenResponseSerializerContext.Default.TokenResponse);
+        
+        // Parse the response
+        var json = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 
-        _log.TokenReceived(t?.TokenType ?? "Unknown", t?.ExpiresInSeconds ?? 0);
-        if (t?.TokenType != "bearer")
+        var t = ParseTokenResponse(json);
+
+        _log.TokenReceived(t.TokenType ?? "Unknown", t.ExpiresInSeconds);
+        if (t.TokenType != "bearer")
         {
             throw new InvalidOperationException("Can only support Bearer tokens");
         }
 
-        t.CreatedTimeStamp = DateTime.Now;
+        return t;
+    }
+
+    /// <summary>
+    /// Parse a TokenResponse from a JSON string
+    /// </summary>
+    /// <param name="json">The JSON response from an OAuth toke request</param>
+    /// <returns>A TokenResponse object</returns>
+    /// <exception cref="InvalidOperationException"></exception>
+    private TokenResponse ParseTokenResponse(string json)
+    {
+        // We are manually parsing the JSON here, as the System.Text.Json source generator has a bug where it is ignoring the JsonPropertyName attribute
+        // For .Net 8 we could use JsonNamingPolicy.SnakeCaseLower, but that is not available in .Net 6
+        var tokenJsonObject = JsonNode.Parse(json);
+        if (tokenJsonObject == null)
+            throw new InvalidOperationException("Failed to parse token response");
+
+        var t = new TokenResponse
+        {
+            AccessToken = tokenJsonObject["access_token"]?.ToString(),
+            TokenType = tokenJsonObject["token_type"]?.ToString()
+        };
+
+        if (long.TryParse(tokenJsonObject["expires_in"]?.ToString(), out var expiresInSeconds))
+        {
+            t.ExpiresInSeconds = expiresInSeconds;
+        }
+
         return t;
     }
 
