@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Runtime.InteropServices;
 using System.Security;
@@ -21,8 +22,10 @@ namespace Tethr.Sdk.Session;
 /// </remarks>
 public class TethrSession : ITethrSession, IDisposable
 {
+    public static readonly string HttpClientName = "TethrSession";
+
     private readonly ILogger<TethrSession> _log;
-    private static ProductInfoHeaderValue? _productInfoHeaderValue;
+    private readonly IHttpClientFactory _httpClientFactory;
     private readonly object _authLock = new();
     private string _apiUser;
     private SecureString _apiPassword;
@@ -30,9 +33,10 @@ public class TethrSession : ITethrSession, IDisposable
     private TokenResponse? _apiToken;
     private readonly IDisposable? _optionsMonitor;
 
-    public TethrSession(IOptionsMonitor<TethrOptions> options, ILogger<TethrSession>? logger = null)
+    public TethrSession(IOptionsMonitor<TethrOptions> options, IHttpClientFactory httpClientFactory, ILogger<TethrSession>? logger = null)
     {
         _log = logger ?? NullLogger<TethrSession>.Instance;
+        _httpClientFactory = httpClientFactory;
 
         if (string.IsNullOrEmpty(options.CurrentValue.Uri))
             throw new ArgumentNullException(nameof(options.CurrentValue.Uri));
@@ -41,62 +45,11 @@ public class TethrSession : ITethrSession, IDisposable
         if (string.IsNullOrEmpty(options.CurrentValue.Password))
             throw new ArgumentNullException(nameof(options.CurrentValue.Password));
 
-        var hostUri = new Uri(options.CurrentValue.Uri, UriKind.Absolute);
-
-        if (!hostUri.Scheme.Equals(Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase))
-        {
-            _log.InsecureConnectionWarning();
-        }
-
         _apiUser = options.CurrentValue.ApiUser;
         _apiPassword = ToSecureString(options.CurrentValue.Password);
-        _client = CreateHttpClient(hostUri);
+        _client = _httpClientFactory.CreateClient(HttpClientName);
 
-        _optionsMonitor = options.OnChange((o, _) =>
-        {
-            lock (_authLock)
-            {
-                try
-                {
-                    var valid = true;
-                    if (string.IsNullOrEmpty(o.Uri))
-                    {
-                        _log.ErrorUpdatingOptionsMissingOption("Uri");
-                        valid = false;
-                    }
-
-                    if (string.IsNullOrEmpty(o.ApiUser))
-                    {
-                        _log.ErrorUpdatingOptionsMissingOption("ApiUser");
-                        valid = false;
-                    }
-
-                    if (string.IsNullOrEmpty(o.Password))
-                    {
-                        _log.ErrorUpdatingOptionsMissingOption("Password");
-                        valid = false;
-                    }
-
-                    if (!valid) return;
-
-                    var newHostUri = new Uri(o.Uri!, UriKind.Absolute);
-                    if (newHostUri != _client.BaseAddress)
-                    {
-                        // NOTE: Not disposing the old client, It's a bad idea to dispose of a HttpClient, and it's not necessary to do so.
-                        _client = CreateHttpClient(newHostUri);
-                    }
-
-                    _apiUser = o.ApiUser!;
-                    _apiPassword = ToSecureString(o.Password!);
-
-                    ClearAuthToken();
-                }
-                catch (Exception e)
-                {
-                    _log.ErrorUpdatingOptions(e);
-                }
-            }
-        });
+        _optionsMonitor = options.OnChange((o, _) => UpdateTethrOptions(o));
     }
 
     /// <summary>
@@ -115,15 +68,55 @@ public class TethrSession : ITethrSession, IDisposable
     public bool ResetAuthTokenOnUnauthorized { get; set; } = true;
 
     public static IWebProxy? DefaultProxy { get; set; } = WebRequest.DefaultWebProxy;
-
+    
     /// <summary>
-    /// Add data used to in the HTTP User-Agent Header for requests to Tethr.
+    /// Handle changes to the TethrOptions configuration
     /// </summary>
-    /// <param name="product">The name of the product</param>
-    /// <param name="version">The version number of the product</param>
-    public static void SetProductInfoHeaderValue(string product, string version)
+    /// <param name="newTethrOptions"></param>
+    private void UpdateTethrOptions(TethrOptions newTethrOptions)
     {
-        _productInfoHeaderValue = new ProductInfoHeaderValue(product, version);
+        lock (_authLock)
+        {
+            try
+            {
+                var valid = true;
+                if (string.IsNullOrEmpty(newTethrOptions.Uri))
+                {
+                    _log.ErrorUpdatingOptionsMissingOption("Uri");
+                    valid = false;
+                }
+
+                if (string.IsNullOrEmpty(newTethrOptions.ApiUser))
+                {
+                    _log.ErrorUpdatingOptionsMissingOption("ApiUser");
+                    valid = false;
+                }
+
+                if (string.IsNullOrEmpty(newTethrOptions.Password))
+                {
+                    _log.ErrorUpdatingOptionsMissingOption("Password");
+                    valid = false;
+                }
+
+                if (!valid) return;
+
+                var newHostUri = new Uri(newTethrOptions.Uri!, UriKind.Absolute);
+                if (newHostUri != _client.BaseAddress)
+                {
+                    // NOTE: Not disposing the old client, It's a bad idea to dispose of a HttpClient, and it's not necessary to do so.
+                    _client = _httpClientFactory.CreateClient(HttpClientName);
+                }
+
+                _apiUser = newTethrOptions.ApiUser!;
+                _apiPassword = ToSecureString(newTethrOptions.Password!);
+
+                ClearAuthToken();
+            }
+            catch (Exception e)
+            {
+                _log.ErrorUpdatingOptions(e);
+            }
+        }
     }
 
     /// <inheritdoc/>
@@ -230,6 +223,7 @@ public class TethrSession : ITethrSession, IDisposable
             using var message = await _client.SendAsync(request, cancellationToken).ConfigureAwait(false);
 
             EnsureAuthorizedStatusCode(message);
+            EnsureNotBadRequest(message);
             message.EnsureSuccessStatusCode();
 
             if (message.Content.Headers.ContentType?.MediaType?.Equals("application/json",
@@ -273,6 +267,7 @@ public class TethrSession : ITethrSession, IDisposable
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", GetApiAuthToken(cancellationToken));
         using var message = await _client.SendAsync(request, cancellationToken).ConfigureAwait(false);
         EnsureAuthorizedStatusCode(message);
+        EnsureNotBadRequest(message);
         message.EnsureSuccessStatusCode();
 
         if (message.Content.Headers.ContentType?.MediaType?
@@ -305,6 +300,7 @@ public class TethrSession : ITethrSession, IDisposable
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", GetApiAuthToken(cancellationToken));
         using var message = await _client.SendAsync(request, cancellationToken).ConfigureAwait(false);
         EnsureAuthorizedStatusCode(message);
+        EnsureNotBadRequest(message);
         message.EnsureSuccessStatusCode();
     }
 
@@ -370,6 +366,16 @@ public class TethrSession : ITethrSession, IDisposable
             }
             case HttpStatusCode.Forbidden:
                 throw new UnauthorizedAccessException("Request returned 403 (Forbidden)");
+        }
+    }
+    
+    private void EnsureNotBadRequest(HttpResponseMessage message)
+    {
+        if (message.StatusCode == HttpStatusCode.BadRequest)
+        {
+            var content = message.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+            _log.LogError("Request returned 400 (Bad Request): {content}", content);
+            throw new ValidationException(content);
         }
     }
 
@@ -471,12 +477,24 @@ public class TethrSession : ITethrSession, IDisposable
         return secure;
     }
 
-    private HttpClient CreateHttpClient(Uri hostUri)
+    public static void ConfigureHttpClient(HttpClient client, TethrOptions options, ILogger<TethrSession> log)
     {
         var version = typeof(TethrSession).Assembly.GetName().Version?.ToString() ?? "Unknown";
         var proxyUri = string.Empty;
         var httpHandler = new HttpClientHandler { UseCookies = false, AllowAutoRedirect = false };
         var proxy = DefaultProxy;
+
+        if (string.IsNullOrEmpty(options.Uri))
+        {
+            throw new ArgumentNullException(nameof(options.Uri));
+        }
+        
+        var hostUri = new Uri(options.Uri, UriKind.Absolute);
+
+        if (!hostUri.Scheme.Equals(Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase))
+        {
+            log.InsecureConnectionWarning();
+        }
 
         try
         {
@@ -484,33 +502,20 @@ public class TethrSession : ITethrSession, IDisposable
         }
         catch (PlatformNotSupportedException ex)
         {
-            _log.ProxyError(ex);
+            log.ProxyError(ex);
         }
 
-        _log.RequestInitiated(hostUri.ToString(), version, proxyUri);
+        log.RequestInitiated(hostUri.ToString(), version, proxyUri);
 
         httpHandler.Proxy = proxy;
         httpHandler.UseProxy = true;
 
-        var client = new HttpClient(httpHandler, true)
-        {
-            BaseAddress = hostUri,
-            Timeout = TimeSpan.FromMinutes(5),
-            DefaultRequestHeaders =
-            {
-                UserAgent =
-                {
-                    new ProductInfoHeaderValue("TethrAudioBroker", version),
-                    new ProductInfoHeaderValue($"({Environment.OSVersion})"),
-                    new ProductInfoHeaderValue("DotNet-CLR", Environment.Version.ToString())
-                }
-            }
-        };
-
-        if (_productInfoHeaderValue != null)
-            client.DefaultRequestHeaders.UserAgent.Add(_productInfoHeaderValue);
-
-        return client;
+        client.BaseAddress = hostUri;
+        client.Timeout = TimeSpan.FromMinutes(5);
+        client.DefaultRequestHeaders.UserAgent.Clear();
+        client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("TethrAudioBroker", version));
+        client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue($"({Environment.OSVersion})"));
+        client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("DotNet-CLR", Environment.Version.ToString()));
     }
 
     public void Dispose()

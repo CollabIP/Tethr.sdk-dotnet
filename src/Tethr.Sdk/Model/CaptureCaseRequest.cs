@@ -19,7 +19,7 @@ namespace Tethr.Sdk.Model
 		/// </para>
 		/// </summary>
 		[Required]
-		public string? ReferenceId { get; set; }
+		public string? SessionId { get; set; }
 
 		/// <summary>
 		/// <para>
@@ -62,12 +62,12 @@ namespace Tethr.Sdk.Model
 
 		/// <summary>
 		/// <para>
-		/// The list of contacts that where an active party to the case, i.e. have a message attributed to them in the case.
+		/// The list of participants that where an active party to the case, i.e. have a message attributed to them in the case.
 		/// </para><para>
 		/// If a contact didn't send any messages, they can be included in the list of contacts but Tethr will not do anything with them.
 		/// </para>
 		/// </summary>
 		[Required]
-		public List<CaptureCaseContact> Contacts { get; set; } = new();
+		public List<CaptureCaseContact> Participants { get; set; } = new();
 	}
 }

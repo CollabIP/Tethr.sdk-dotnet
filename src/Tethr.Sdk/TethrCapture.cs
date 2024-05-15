@@ -1,4 +1,5 @@
-﻿using Tethr.Sdk.Model;
+﻿using System.Text.Json.Nodes;
+using Tethr.Sdk.Model;
 using Tethr.Sdk.Session;
 
 namespace Tethr.Sdk;
@@ -160,7 +161,7 @@ public class TethrCapture(ITethrSession tethrSession)
     {
         var result = await
             tethrSession.PostAsync(
-                "/capture/v2/chat",
+                "/capture/v2/case",
                 captureCaseRequest,
                 TethrModelSerializerContext.Default.CaptureCaseRequest,
                 TethrModelSerializerContext.Default.CaptureResponse, cancellationToken).ConfigureAwait(false);
@@ -223,6 +224,90 @@ public class TethrCapture(ITethrSession tethrSession)
             tethrSession.PostAsync("/capture/v2/status/exclude",
                     new SessionExcludeBulkRequest { SessionIds = sessionIds },
                     TethrModelSerializerContext.Default.SessionExcludeBulkRequest,
+                    cancellationToken)
+                .ConfigureAwait(false);
+    }
+    
+    public async Task AppendMetadataBySessionIdAsync(
+        string sessionId, 
+        JsonNode metadata, 
+        DateTime? eventTime = null,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(metadata, nameof(metadata));
+        
+        await
+            tethrSession.PostAsync($"/capture/v2/outofband/interaction",
+                    new AppendMetadataBySessionIdRequest
+                    {
+                        SessionId = sessionId,
+                        EventTime = eventTime ?? DateTime.UtcNow,
+                        Metadata = metadata
+                    },
+                    TethrModelSerializerContext.Default.AppendMetadataBySessionIdRequest,
+                    cancellationToken)
+                .ConfigureAwait(false);
+    }
+    
+    public async Task AppendMetadataByMasterIdAsync(
+        string masterId, 
+        JsonNode metadata, 
+        DateTime? eventTime = null,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(metadata, nameof(metadata));
+
+        await
+            tethrSession.PostAsync($"/capture/v2/outofband/master",
+                    new AppendMetadataByMasterIdRequest
+                    {
+                        MasterId = masterId,
+                        EventTime = eventTime ?? DateTime.UtcNow,
+                        Metadata = metadata
+                    },
+                    TethrModelSerializerContext.Default.AppendMetadataByMasterIdRequest,
+                    cancellationToken)
+                .ConfigureAwait(false);
+    }
+    
+    public async Task AppendMetadataByCaseReferenceIdAsync(
+        string caseReferenceId, 
+        JsonNode metadata, 
+        DateTime? eventTime = null,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(metadata, nameof(metadata));
+        
+        await
+            tethrSession.PostAsync($"/capture/v2/outofband/case",
+                    new AppendMetadataByCaseReferenceIdRequest
+                    {
+                        CaseReferenceId = caseReferenceId,
+                        EventTime = eventTime ?? DateTime.UtcNow,
+                        Metadata = metadata
+                    },
+                    TethrModelSerializerContext.Default.AppendMetadataByCaseReferenceIdRequest,
+                    cancellationToken)
+                .ConfigureAwait(false);
+    }
+    
+    public async Task AppendMetadataByCollectionIdAsync(
+        string collectionId, 
+        JsonNode metadata, 
+        DateTime? eventTime = null,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(metadata, nameof(metadata));
+        
+        await
+            tethrSession.PostAsync($"/capture/v2/outofband/collection",
+                    new AppendMetadataByCollectionIdRequest
+                    {
+                        CollectionId = collectionId,
+                        EventTime = eventTime ?? DateTime.UtcNow,
+                        Metadata = metadata
+                    },
+                    TethrModelSerializerContext.Default.AppendMetadataByCollectionIdRequest,
                     cancellationToken)
                 .ConfigureAwait(false);
     }

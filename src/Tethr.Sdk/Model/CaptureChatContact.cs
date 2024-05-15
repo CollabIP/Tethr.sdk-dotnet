@@ -47,6 +47,7 @@ public class CaptureChatContact
 	/// <summary>
 	/// Optional email of the contact.
 	/// </summary>
+	[EmailAddress]
 	public string? Email { get; set; }
 
 	public List<CaptureChatMessage> Messages { get; set; } = new();

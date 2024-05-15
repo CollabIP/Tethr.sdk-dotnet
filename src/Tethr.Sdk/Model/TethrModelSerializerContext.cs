@@ -33,4 +33,9 @@ namespace Tethr.Sdk.Model;
 [JsonSerializable(typeof(CustomFieldsResponse))]
 [JsonSerializable(typeof(ParticipantTypesResponse))]
 
+[JsonSerializable(typeof(AppendMetadataBySessionIdRequest))]
+[JsonSerializable(typeof(AppendMetadataByMasterIdRequest))]
+[JsonSerializable(typeof(AppendMetadataByCaseReferenceIdRequest))]
+[JsonSerializable(typeof(AppendMetadataByCollectionIdRequest))]
+
 public sealed partial class TethrModelSerializerContext : JsonSerializerContext;
