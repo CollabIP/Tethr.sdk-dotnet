@@ -100,17 +100,25 @@ public class TethrInteraction(ITethrSession tethrSession)
     /// <summary>
     /// Purge interactions specified by a list of customer Ids (phone numbers or emails).
     /// </summary>
-    /// <param name="interactionPurgeRequest">A request containing a list of customer phone numbers or emails</param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    public async Task<InteractionPurgeSummary> PurgeByCustomerIdsAsync(InteractionPurgeRequest interactionPurgeRequest,
+    /// <param name="request">The specified customer phone numbers and/or emails. Phone formats must match that of what is in Tethr.</param>
+    /// <param name="whatIf">When set to true, Tethr will return a list of interactions that would have been purged. Purge status in the response will be listed as 'WhatIf' when used.</param>
+    /// <param name="cancellationToken">Cancellation Token</param>
+    /// <returns>An array containing the purge status of the requested calls</returns>
+    public async Task<InteractionPurgeSummary> PurgeByCustomerIdsAsync(InteractionPurgeByCustomerMetadataRequest request,
+        bool whatIf = false,
         CancellationToken cancellationToken = default)
     {
+        var resourcePath = "/interactions/v2/purge/customer";
+        if (whatIf)
+        {
+            resourcePath += "?whatIf=true";
+        }
+        
         var result = await
             tethrSession.PostAsync(
-                "/interactions/v2/purge/customer",
-                interactionPurgeRequest,
-                TethrModelSerializerContext.Default.InteractionPurgeRequest,
+                resourcePath,
+                request,
+                TethrModelSerializerContext.Default.InteractionPurgeByCustomerMetadataRequest,
                 TethrModelSerializerContext.Default.InteractionPurgeSummary,
                 cancellationToken).ConfigureAwait(false);
         return result;

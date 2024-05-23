@@ -17,6 +17,7 @@ namespace Tethr.Sdk.Model;
 [JsonSerializable(typeof(InteractionShareResponse))]
 [JsonSerializable(typeof(InteractionShareRequest))]
 [JsonSerializable(typeof(InteractionPurgeRequest))]
+[JsonSerializable(typeof(InteractionPurgeByCustomerMetadataRequest))]
 [JsonSerializable(typeof(InteractionPurgeSummary))]
 
 [JsonSerializable(typeof(SessionStatusRequest))]
