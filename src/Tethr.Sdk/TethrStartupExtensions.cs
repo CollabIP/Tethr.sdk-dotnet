@@ -32,9 +32,9 @@ public static class TethrStartupExtensions
         var serviceProvider = services.BuildServiceProvider();
         var tethrOptions = serviceProvider.GetRequiredService<IOptions<TethrOptions>>().Value;
         var log = serviceProvider.GetRequiredService<ILogger<TethrSession>>();
-        var httpClientBuilder = services.AddHttpClient(
-            TethrSession.HttpClientName, 
-            config => TethrSession.ConfigureHttpClient(config, tethrOptions, log));
+        var httpClientBuilder = services.AddHttpClient(TethrSession.HttpClientName)
+            .ConfigureHttpClient(httpClient => TethrSession.ConfigureHttpClient(httpClient, tethrOptions, log))
+            .ConfigurePrimaryHttpMessageHandler(() => TethrSession.ConfigurePrimaryHttpMessageHandler(tethrOptions, log));
         
         // Allow the caller to configure the HttpClient
         httpClientAction?.Invoke(httpClientBuilder);

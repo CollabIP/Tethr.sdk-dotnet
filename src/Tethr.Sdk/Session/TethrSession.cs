@@ -479,23 +479,40 @@ public class TethrSession : ITethrSession, IDisposable
 
     public static void ConfigureHttpClient(HttpClient client, TethrOptions options, ILogger<TethrSession> log)
     {
-        var version = typeof(TethrSession).Assembly.GetName().Version?.ToString() ?? "Unknown";
-        var proxyUri = string.Empty;
-        var httpHandler = new HttpClientHandler { UseCookies = false, AllowAutoRedirect = false };
-        var proxy = DefaultProxy;
-
         if (string.IsNullOrEmpty(options.Uri))
         {
             throw new ArgumentNullException(nameof(options.Uri));
         }
         
         var hostUri = new Uri(options.Uri, UriKind.Absolute);
-
         if (!hostUri.Scheme.Equals(Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase))
         {
             log.InsecureConnectionWarning();
         }
 
+        client.BaseAddress = hostUri;
+        client.Timeout = TimeSpan.FromMinutes(5);
+        client.DefaultRequestHeaders.UserAgent.Clear();
+        client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("TethrAudioBroker", GetVersion()));
+        client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue($"({Environment.OSVersion})"));
+        client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("DotNet-CLR", Environment.Version.ToString()));
+    }
+
+    public static HttpClientHandler ConfigurePrimaryHttpMessageHandler(TethrOptions options, ILogger<TethrSession> log)
+    {
+        if (string.IsNullOrEmpty(options.Uri))
+        {
+            throw new ArgumentNullException(nameof(options.Uri));
+        }
+        
+        var hostUri = new Uri(options.Uri, UriKind.Absolute);
+        if (!hostUri.Scheme.Equals(Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase))
+        {
+            log.InsecureConnectionWarning();
+        }
+
+        var proxy = DefaultProxy;
+        var proxyUri = string.Empty;
         try
         {
             proxyUri = proxy?.GetProxy(hostUri)?.ToString() ?? "None";
@@ -505,17 +522,18 @@ public class TethrSession : ITethrSession, IDisposable
             log.ProxyError(ex);
         }
 
-        log.RequestInitiated(hostUri.ToString(), version, proxyUri);
+        log.RequestInitiated(hostUri.ToString(), GetVersion(), proxyUri);
 
+        var httpHandler = new HttpClientHandler { UseCookies = false, AllowAutoRedirect = false };
         httpHandler.Proxy = proxy;
         httpHandler.UseProxy = true;
 
-        client.BaseAddress = hostUri;
-        client.Timeout = TimeSpan.FromMinutes(5);
-        client.DefaultRequestHeaders.UserAgent.Clear();
-        client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("TethrAudioBroker", version));
-        client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue($"({Environment.OSVersion})"));
-        client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("DotNet-CLR", Environment.Version.ToString()));
+        return httpHandler;
+    }
+
+    private static string GetVersion()
+    {
+        return typeof(TethrSession).Assembly.GetName().Version?.ToString() ?? "Unknown";
     }
 
     public void Dispose()

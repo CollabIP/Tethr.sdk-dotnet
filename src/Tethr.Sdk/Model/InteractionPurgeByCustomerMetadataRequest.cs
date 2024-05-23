@@ -15,11 +15,11 @@ public class InteractionPurgeByCustomerMetadataRequest
     /// <summary>
     /// List of phone numbers to purge, Tethr will look up any interactions where the provided phones is found on an external participant.
     /// </summary>
-    public List<string> PhoneNumbers { get; set; }
+    public List<string>? PhoneNumbers { get; set; }
 
     /// <summary>
     /// List of email address to purge, Tethr will look up any interactions where the provided email address is found on an external participant.
     /// </summary>
     [EmailAddress]
-    public List<string> Emails { get; set; }
+    public List<string>? Emails { get; set; }
 }
