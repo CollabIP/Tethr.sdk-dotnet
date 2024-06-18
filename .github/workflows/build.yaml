@@ -1,0 +1,42 @@
+name: "Build and Publish"
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build:
+    name: Build and Publish
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Extract version data
+      id: version
+      run: |
+        TAG=${GITHUB_REF#refs/tags/}  # Correct way to remove the prefix
+        ASSEMBLY_VERSION=${TAG%-*}  # Remove suffix starting with the first dash
+        ASSEMBLY_VERSION=${ASSEMBLY_VERSION//v/}  # Remove the 'v' prefix
+        echo "ASSEMBLY_VERSION=${ASSEMBLY_VERSION}" >> $GITHUB_ENV
+        NUGET_VERSION=${TAG//v/}  # Remove the 'v' prefix for NuGet version
+        echo "NUGET_VERSION=$NUGET_VERSION" >> $GITHUB_ENV
+
+    - name: restore dependencies for solution   
+      run: dotnet restore src/Tethr.Sdk.sln
+
+    - name: Build
+      run: dotnet build src/Tethr.Sdk.sln /p:Configuration=Release /p:Version=${{ env.ASSEMBLY_VERSION }}
+
+    - name: Run tests
+      run: dotnet test src/Tethr.Sdk.Tests/Tethr.Sdk.Tests.csproj
+
+    - name: Pack Tethr.Sdk
+      run: dotnet pack src/Tethr.Sdk/Tethr.Sdk.csproj --configuration Release --output ./nupkg /p:PackageVersion=${{ env.NUGET_VERSION}} --include-symbols -p:SymbolPackageFormat=snupkg
+
+    - name: Pack Tethr.Sdk.Heartbeat
+      run: dotnet pack src/Tethr.Sdk.Heartbeat/Tethr.Sdk.Heartbeat.csproj --configuration Release --output ./nupkg /p:PackageVersion=${{ env.NUGET_VERSION }} --include-symbols -p:SymbolPackageFormat=snupkg
+
+    - name: Publish to NuGet
+      run: dotnet nuget push "./nupkg/*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json

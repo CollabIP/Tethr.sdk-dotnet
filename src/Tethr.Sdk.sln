@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tethr.Sdk", "Tethr.Sdk\Tethr.Sdk.csproj", "{1F54F3D5-E871-4B37-81B5-DBF4E7B22B4A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tethr.Sdk.Heartbeat", "Tethr.Sdk.Heartbeat\Tethr.Sdk.Heartbeat.csproj", "{28C4BFBF-0AD3-4F20-AE22-D926C2EFC8D7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tethr.Demo.Uploader", "Tethr.Demo.Uploader\Tethr.Demo.Uploader.csproj", "{64C5BD27-2A6D-4FFF-B899-6F3A472A99AB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tethr.Sdk.Tests", "Tethr.Sdk.Tests\Tethr.Sdk.Tests.csproj", "{07E0B810-EEBD-4FFD-B04F-22F7D6442754}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1F54F3D5-E871-4B37-81B5-DBF4E7B22B4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F54F3D5-E871-4B37-81B5-DBF4E7B22B4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F54F3D5-E871-4B37-81B5-DBF4E7B22B4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F54F3D5-E871-4B37-81B5-DBF4E7B22B4A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28C4BFBF-0AD3-4F20-AE22-D926C2EFC8D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28C4BFBF-0AD3-4F20-AE22-D926C2EFC8D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28C4BFBF-0AD3-4F20-AE22-D926C2EFC8D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28C4BFBF-0AD3-4F20-AE22-D926C2EFC8D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64C5BD27-2A6D-4FFF-B899-6F3A472A99AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64C5BD27-2A6D-4FFF-B899-6F3A472A99AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64C5BD27-2A6D-4FFF-B899-6F3A472A99AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64C5BD27-2A6D-4FFF-B899-6F3A472A99AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{07E0B810-EEBD-4FFD-B04F-22F7D6442754}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07E0B810-EEBD-4FFD-B04F-22F7D6442754}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07E0B810-EEBD-4FFD-B04F-22F7D6442754}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07E0B810-EEBD-4FFD-B04F-22F7D6442754}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
