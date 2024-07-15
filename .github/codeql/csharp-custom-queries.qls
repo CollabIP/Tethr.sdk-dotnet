@@ -35,3 +35,5 @@
     id: cs/missed-readonly-modifier
     id: cs/linq/missed-select
     id: cs/missed-ternary-operator
+    id: cs/useless-upcast
+    id: cs/useless-cast-to-self
