@@ -19,7 +19,7 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         jira-token: ${{ secrets.JIRA_TOKEN }}
-        jira-base-url: https://creovai.atlassian.net
+        jira-base-url: ${{ vars.JIRA_ENDPOINT }}
         skip-comments: true
         pr-threshold: 1000
         allowed_issue_statuses: "In Progress,Done,READY FOR SIGN-OFF"
