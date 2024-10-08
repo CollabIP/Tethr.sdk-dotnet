@@ -28,7 +28,7 @@ jobs:
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
+      uses: github/codeql-action/init@v3
       with:
         languages: csharp
         config-file: ./.github/codeql/codeql-config.yml
@@ -38,7 +38,7 @@ jobs:
         dotnet build src/Tethr.Sdk.sln /p:UseSharedCompilation=false /t:rebuild /p:Platform="Any CPU" /p:Configuration="Release" /p:MvcBuildViews=true
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
+      uses: github/codeql-action/analyze@v3
 
     - name: Run Unit Tests
       id: unit_tests
@@ -53,7 +53,7 @@ jobs:
 
     - name: Upload .received.bin files as artifacts
       if: steps.unit_tests.outcome == 'failure'
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: received-bin-files
         path: |
