@@ -21,7 +21,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: restore dependencies for solution   
       run: dotnet restore src/Tethr.Sdk.sln
@@ -67,5 +67,5 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: cSharp-Sarif
-        path: results/cSharp.sarif 
+        path: /home/runner/work/Tethr.sdk-dotnet/results/csharp.sarif
         # if-no-files-found: error (commented out, uncomment if you want to enforce this)
