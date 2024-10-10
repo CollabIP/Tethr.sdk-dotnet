@@ -9,7 +9,6 @@
 - exclude:
     id: cs/log-forging
     id: cs/call-to-obsolete-method
-    id: cs/missed-readonly-modifier
     id: cs/useless-tostring-call
     id: cs/complex-block
     id: cs/web/debug-binary
@@ -20,7 +19,6 @@
     id: cs/catch-of-all-exceptions
     id: cs/compilation-message
     id: cs/missed-ternary-operator
-    id: cs/missed-readonly-modifier
     id: cs/inefficient-containskey
     id: cs/linq/missed-where
     id: cs/linq/missed-select
@@ -32,8 +30,6 @@
     id: cs/missed-ternary-operator
     id: cs/useless-cast-to-self
     id: cs/equality-on-floats
-    id: cs/missed-readonly-modifier
-    id: cs/linq/missed-select
     id: cs/missed-ternary-operator
     id: cs/useless-upcast
     id: cs/useless-cast-to-self
