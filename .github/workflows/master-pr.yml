@@ -14,13 +14,18 @@ on:
 jobs:
   Jira:
     runs-on: ubuntu-latest
+    permissions:
+      issues: write # needed to label/comment on the PR
+      pull-requests: write # labels on a PR require this in addition to issues:write
     steps:
-    - uses: CollabIP/jira-lint@master
+    # https://github.com/capacity-autoqa/jira-lint/tree/0.2.0
+    - uses: capacity-autoqa/jira-lint@cc8ccdafcbe10be85e2bf91d5587f4f84dbe82aa
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         jira-token: ${{ secrets.JIRA_TOKEN }}
         jira-base-url: ${{ vars.JIRA_ENDPOINT }}
+        skip-branches: '^snyk-fix-'
         skip-comments: true
         pr-threshold: 1000
-        allowed_issue_statuses: "In Progress,Done,READY FOR SIGN-OFF"
+        allowed_issue_statuses: ${{ vars.JIRA_ALLOWED_STATUSES || 'Open,Reopened,To Do,In Progress' }}
         validate_issue_status: true
